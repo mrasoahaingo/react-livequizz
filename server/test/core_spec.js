@@ -22,9 +22,13 @@ describe('application initialization', () => {
 
     it('set players', () => {
         const state = Map();
-        const players = List.of( 'Bryan', 'Sandy' )
+        const players = [ 'Bryan', 'Sandy' ];
         const nextState = setPlayers(state, players);
         expect(nextState).to.equal(Map({
+            scores: Map({
+                Bryan: 0,
+                Sandy: 0
+            }),
             players: List.of( 'Bryan', 'Sandy' )
         }));
     });

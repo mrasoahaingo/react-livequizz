@@ -5,7 +5,11 @@ export function setEntries(state, entries) {
 }
 
 export function setPlayers(state, players) {
-    return state.set('players', fromJS(players));
+    const playerList = fromJS(players);
+    const scores = playerList.reduce((scores, player) => scores.set(player, 0), Map());
+    return state
+        .set('scores', scores)
+        .set('players', playerList);
 }
 
 function getWinnerOrTie(state) {
@@ -35,6 +39,7 @@ export function next(state) {
     const entries = state.get('entries').skip(1);
 
     return state
+        .remove('buzzer')
         .remove('out')
         .merge({
             quizz,
@@ -43,7 +48,7 @@ export function next(state) {
 }
 
 export function buzz(state, playerId) {
-    if (state.get('out', List()).find(player => player === playerId)) {
+    if (state.get('buzzer') || state.get('out', List()).find(player => player === playerId)) {
         return state;
     }
     return state.set('buzzer', playerId);
