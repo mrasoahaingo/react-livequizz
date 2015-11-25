@@ -1,11 +1,11 @@
-import { List, Map } from 'immutable'
+import { List, Map, fromJS } from 'immutable'
 
 export function setEntries(state, entries) {
-    return state.set('entries', List(entries));
+    return state.set('entries', fromJS(entries));
 }
 
 export function setPlayers(state, players) {
-    return state.set('players', List(players));
+    return state.set('players', fromJS(players));
 }
 
 function getWinnerOrTie(state) {

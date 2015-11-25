@@ -7,10 +7,10 @@ describe('application initialization', () => {
 
     it('set quizz entries', () => {
         const state = Map();
-        const entries = List.of(
-            Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
-            Map({ question: 'What is Sandy lastname', response: 'Kilo' })
-        );
+        const entries = [
+            { question: 'Where is Bryan', response: 'In the kitchen' },
+            { question: 'What is Sandy lastname', response: 'Kilo' }
+        ];
         const nextState = setEntries(state, entries);
         expect(nextState).to.equal(Map({
             entries: List.of(
