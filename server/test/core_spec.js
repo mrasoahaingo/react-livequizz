@@ -1,4 +1,4 @@
-import { List, Map } from 'immutable'
+import { List, Map, OrderedMap } from 'immutable'
 import { expect } from 'chai'
 
 import { setEntries, setPlayers, next, buzz, rightResponse, wrongResponse } from '../src/core'
@@ -33,8 +33,9 @@ describe('application initialization', () => {
 
 describe('application logic', () => {
     describe('next', () => {
-        it('pick the next question', () => {
+        it('pick the next question and clear outted player', () => {
             const state = Map({
+                out: List.of('Sandy', 'Bryan'),
                 entries: List.of(
                     Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
                     Map({ question: 'What is Sandy lastname', response: 'Kilo' })
@@ -45,6 +46,44 @@ describe('application logic', () => {
                 quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
                 entries : List.of(
                     Map({ question: 'What is Sandy lastname', response: 'Kilo' })
+                )
+            }));
+        });
+
+        it('have a winner', () => {
+            const state = Map({
+                scores: Map({
+                    Bryan: 3,
+                    Sandy: 1
+                }),
+                entries: List()
+            });
+            const nextState = next(state);
+            expect(nextState).to.equal(Map({
+                scores: Map({
+                    Bryan: 3,
+                    Sandy: 1
+                }),
+                winner: 'Bryan'
+            }));
+        });
+
+        it('tied winner', () => {
+            const state = Map({
+                scores: Map({
+                    Bryan: 3,
+                    Sandy: 3
+                }),
+                entries: List()
+            });
+            const nextState = next(state);
+            expect(nextState).to.equal(Map({
+                scores: Map({
+                    Bryan: 3,
+                    Sandy: 3
+                }),
+                entries: List.of(
+                    Map({ question: 'Bonus' })
                 )
             }));
         });
@@ -66,6 +105,17 @@ describe('application logic', () => {
                     Map({ question: 'What is Sandy lastname', response: 'Kilo' })
                 )
             }));
+        });
+        it('cannot buzz when player is out', () => {
+            const state = Map({
+                out: List.of('Sandy'),
+                quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
+                entries : List.of(
+                    Map({ question: 'What is Sandy lastname', response: 'Kilo' })
+                )
+            });
+            const nextState = buzz(state, 'Sandy');
+            expect(nextState).to.equal(state);
         });
     });
 
