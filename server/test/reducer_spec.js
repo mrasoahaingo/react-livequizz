@@ -5,13 +5,12 @@ import reducer from '../src/reducer'
 
 describe('reducer', () => {
     it('handle set entries', () => {
-        const initialState = Map();
         const entries = [
             { question: 'Where is Bryan', response: 'In the kitchen' },
             { question: 'What is Sandy lastname', response: 'Kilo' }
         ];
         const action = { type: 'SET_ENTRIES', entries };
-        const nextState = reducer(initialState, action);
+        const nextState = reducer(undefined, action);
         expect(nextState).to.equal(fromJS({
             entries: [
                 { question: 'Where is Bryan', response: 'In the kitchen' },

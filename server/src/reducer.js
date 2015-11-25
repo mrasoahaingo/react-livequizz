@@ -1,6 +1,7 @@
+import { Map } from 'immutable'
 import { setEntries, setPlayers, next, buzz, rightResponse, wrongResponse } from './core'
 
-export default function reducer(state, action) {
+export default function reducer(state = Map(), action) {
     switch (action.type) {
         case 'SET_ENTRIES':
         return setEntries(state, action.entries);
