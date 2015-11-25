@@ -1,5 +1,5 @@
 import { Map } from 'immutable'
-import { setEntries, setPlayers, next, buzz, rightResponse, wrongResponse } from './core'
+import { setEntries, setPlayers, addEntry, addPlayer, next, buzz, rightResponse, wrongResponse } from './core'
 
 export default function reducer(state = Map(), action) {
     switch (action.type) {
@@ -8,6 +8,12 @@ export default function reducer(state = Map(), action) {
 
         case 'SET_PLAYERS':
         return setPlayers(state, action.players);
+
+        case 'ADD_ENTRY':
+        return addEntry(state, action.entry);
+
+        case 'ADD_PLAYER':
+        return addPlayer(state, action.player);
 
         case 'NEXT':
         return next(state);

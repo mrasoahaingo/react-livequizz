@@ -4,6 +4,16 @@ export function setEntries(state, entries) {
     return state.set('entries', fromJS(entries));
 }
 
+export function addEntry(state, entry) {
+    return state.update('entries', entries => entries.push(fromJS(entry)));
+}
+
+export function addPlayer(state, playerId) {
+    return state
+        .setIn([ 'scores', playerId ], 0)
+        .update('players', players => players.push(playerId));
+}
+
 export function setPlayers(state, players) {
     const playerList = fromJS(players);
     const scores = playerList.reduce((scores, player) => scores.set(player, 0), Map());
@@ -19,9 +29,7 @@ function getWinnerOrTie(state) {
     ] = state.get('scores').sort().takeLast(2);
 
     if(firstScore === secondScore) {
-        const bonus = Map({ question: 'Bonus' });
-        return state
-            .update('entries', entries => entries.push(bonus));
+        return addEntry(state, { question: 'Bonus' });
     }
 
     return state

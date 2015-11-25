@@ -116,7 +116,10 @@ describe('reducer', () => {
                 { question: 'Where is Bryan', response: 'In the kitchen' },
                 { question: 'What is Sandy lastname', response: 'Kilo' }
             ] },
-            { type: 'SET_PLAYERS', players: [ 'Mic', 'Fran', 'Eva', 'Lana' ] },
+            { type: 'SET_PLAYERS', players: [ 'Mic', 'Fran' ] },
+            { type: 'ADD_PLAYER', player: 'Eva' },
+            { type: 'ADD_PLAYER', player: 'Lana' },
+
             { type: 'NEXT' },
 
             { type: 'BUZZ', playerId: 'Eva' },
