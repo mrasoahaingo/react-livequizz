@@ -9,6 +9,9 @@ export function addEntry(state, entry) {
 }
 
 export function addPlayer(state, playerId) {
+    if(state.get('players', List()).includes(playerId)) {
+        return state;
+    }
     return state
         .setIn([ 'scores', playerId ], 0)
         .update('players', players => players.push(playerId));
@@ -33,7 +36,7 @@ function getWinnerOrTie(state) {
     }
 
     return state
-        .remove('entries')
+        .set('entries', List())
         .set('winner', firstPlayer);
 }
 
@@ -47,8 +50,8 @@ export function next(state) {
     const entries = state.get('entries').skip(1);
 
     return state
-        .remove('buzzer')
-        .remove('out')
+        .set('buzzer', null)
+        .set('out', List())
         .merge({
             quizz,
             entries
@@ -56,7 +59,7 @@ export function next(state) {
 }
 
 export function buzz(state, playerId) {
-    if (state.get('buzzer') || state.get('out', List()).find(player => player === playerId)) {
+    if (state.get('buzzer') || state.get('out', List()).includes(playerId)) {
         return state;
     }
     return state.set('buzzer', playerId);
@@ -64,10 +67,12 @@ export function buzz(state, playerId) {
 
 export function rightResponse(state) {
     const playerId = state.get('buzzer');
+    if (!playerId) {
+        return state;
+    }
     const quizzToBeArchived = state.get('quizz').set('buzzer', playerId);
     return state
-        .remove('buzzer')
-        .remove('quizz')
+        .set('buzzer', null)
         .updateIn(
             ['scores', playerId],
             0,
@@ -78,7 +83,10 @@ export function rightResponse(state) {
 
 export function wrongResponse(state) {
     const playerId = state.get('buzzer');
+    if (!playerId) {
+        return state;
+    }
     return state
-        .remove('buzzer')
+        .set('buzzer', null)
         .update('out', List(), out => out.push(playerId));
 }
