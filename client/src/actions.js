@@ -49,10 +49,16 @@ export function rightResponse () {
     }
 }
 
-
 export function wrongResponse () {
     return {
         meta: { remote: true },
         type: 'WRONG_RESPONSE'
+    }
+}
+
+export function toggleResponse () {
+    return {
+        meta: { remote: true },
+        type: 'TOGGLE_RESPONSE'
     }
 }

@@ -8,8 +8,7 @@ function addPlayer(state, player) {
     return state
         .remove('isAdmin')
         .remove('isGuest')
-        .set('player', player)
-        .update('players', List(), players => players.push(player));
+        .set('player', player);
 }
 
 function welcomeAdmin(state) {
@@ -22,14 +21,6 @@ function welcomeGuest(state) {
     return state
         .remove('isAdmin')
         .set('isGuest', true);
-}
-
-function hideResponse(state) {
-    return state.set('showResponse', false);
-}
-
-function showResponse(state) {
-    return state.set('showResponse', true);
 }
 
 export default function reducer(state = Map(), action) {
@@ -45,13 +36,6 @@ export default function reducer(state = Map(), action) {
 
         case 'WELCOME_GUEST':
         return welcomeGuest(state);
-
-        case 'NEXT':
-        return hideResponse(state);
-
-        case 'RIGHT_RESPONSE':
-        case 'SHOW_RESPONSE':
-        return showResponse(state);
 
         default:
         return state;

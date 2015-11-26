@@ -1,5 +1,5 @@
 import { Map } from 'immutable'
-import { setEntries, setPlayers, addEntry, addPlayer, next, buzz, rightResponse, wrongResponse } from './core'
+import { setEntries, setPlayers, addEntry, addPlayer, next, buzz, rightResponse, wrongResponse, toggleResponse } from './core'
 
 export default function reducer(state = Map(), action) {
     switch (action.type) {
@@ -26,6 +26,9 @@ export default function reducer(state = Map(), action) {
 
         case 'WRONG_RESPONSE':
         return wrongResponse(state);
+
+        case 'TOGGLE_RESPONSE':
+        return toggleResponse(state);
 
         default:
         return state;

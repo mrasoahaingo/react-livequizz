@@ -3,12 +3,13 @@ import React from 'react'
 export default class Login extends React.Component {
     setPlayerName (event) {
         event.preventDefault();
-        const playerId = this.refs.playerId.value;
+        const playerId = this.refs.playerId.value.toLowerCase();
         switch(playerId) {
-            case '30ansFrancia':
+            case 'francia':
             this.props.welcomeAdmin();
             break;
 
+            case '':
             case 'guest':
             this.props.welcomeGuest();
             break;

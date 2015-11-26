@@ -1,6 +1,8 @@
 import React from 'react'
 import { render } from 'react-dom'
-import { createStore, applyMiddleware } from 'redux'
+import { compose, createStore, applyMiddleware } from 'redux'
+import { devTools, persistState } from 'redux-devtools';
+import { DevTools, DebugPanel, LogMonitor } from 'redux-devtools/lib/react';
 import { Provider } from 'react-redux'
 import io from 'socket.io-client'
 
@@ -15,12 +17,21 @@ socket.on('state', state =>
   store.dispatch(setState(state))
 );
 
-const createStoreWithMiddleware = applyMiddleware(middleware(socket))(createStore);
+const createStoreWithMiddleware = compose(
+    applyMiddleware(middleware(socket)),
+    devTools(),
+    persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/))
+)(createStore);
 const store = createStoreWithMiddleware(reducer);
 
 render(
-    <Provider store={store}>
-        <AppContainer/>
-    </Provider>
+    <div>
+        <Provider store={store}>
+            <AppContainer/>
+        </Provider>
+        <DebugPanel top right bottom>
+            <DevTools store={store} monitor={LogMonitor} visibleOnLoad={false}/>
+        </DebugPanel>
+    </div>
     , document.getElementById('app')
 );

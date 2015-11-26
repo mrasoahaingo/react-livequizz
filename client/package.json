@@ -25,6 +25,7 @@
     "react-transform-catch-errors": "^1.0.0",
     "react-transform-hmr": "^1.0.0",
     "redbox-react": "^1.2.0",
+    "redux-devtools": "^2.1.5",
     "style-loader": "^0.13.0",
     "stylus-loader": "^1.4.2",
     "webpack": "^1.9.6",

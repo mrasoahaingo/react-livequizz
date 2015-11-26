@@ -6,6 +6,7 @@ import Admin from './Admin'
 import Login from './Login'
 import Player from './Player'
 import Winner from './Winner'
+import DashBoard from './DashBoard'
 
 export class App extends React.Component {
     render () {
@@ -14,6 +15,9 @@ export class App extends React.Component {
         }
         if (this.props.isAdmin) {
             return <Admin {...this.props}/>
+        }
+        if (this.props.isGuest) {
+            return <DashBoard {...this.props}/>
         }
         if (this.props.player) {
             return <Player {...this.props}/>

@@ -6,11 +6,11 @@ import reducer from './reducer'
 const initialState = fromJS({
     buzzer: null,
     quizz: null,
-    response: null,
     entries: [],
     players: [],
     archive: [],
-    out: []
+    out: [],
+    showResponse: false
 });
 
 export default function makeStore() {

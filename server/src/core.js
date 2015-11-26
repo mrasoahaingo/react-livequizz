@@ -52,6 +52,7 @@ export function next(state) {
     return state
         .set('buzzer', null)
         .set('out', List())
+        .set('showResponse', false)
         .merge({
             quizz,
             entries
@@ -89,4 +90,8 @@ export function wrongResponse(state) {
     return state
         .set('buzzer', null)
         .update('out', List(), out => out.push(playerId));
+}
+
+export function toggleResponse (state) {
+    return state.update('showResponse', false, value => !value);
 }
