@@ -13,31 +13,28 @@ export function addPlayer(state, playerId) {
         return state;
     }
     return state
-        .setIn([ 'scores', playerId ], 0)
-        .update('players', players => players.push(playerId));
+        .update('scores', List(), scores => scores.push(Map({player: playerId, score: 0})))
+        .update('players', List(), players => players.push(playerId));
 }
 
 export function setPlayers(state, players) {
     const playerList = fromJS(players);
-    const scores = playerList.reduce((scores, player) => scores.set(player, 0), Map());
-    return state
+    const scores = playerList.reduce((scores, player) => scores.push(Map({player, score: 0})), List());
+    return this.state.
         .set('scores', scores)
         .set('players', playerList);
 }
 
 function getWinnerOrTie(state) {
-    const [
-        [secondPlayer, secondScore],
-        [firstPlayer, firstScore]
-    ] = state.get('scores').sort().takeLast(2);
+    const [first, second] = state.get('scores').sort((a, b) => (a.get('score') < b.get('score')) ).take(2);
 
-    if(firstScore === secondScore) {
+    if(first.get('score') === second.get('score')) {
         return addEntry(state, { question: 'Bonus' });
     }
 
     return state
         .set('entries', List())
-        .set('winner', firstPlayer);
+        .set('winner', first.get('player'));
 }
 
 export function next(state) {
@@ -72,10 +69,11 @@ export function rightResponse(state) {
         return state;
     }
     const quizzToBeArchived = state.get('quizz').set('buzzer', playerId);
+    const scorePlayerIndex = state.get('scores').findIndex(score => (score.get('player') === playerId))
     return state
         .set('buzzer', null)
         .updateIn(
-            ['scores', playerId],
+            ['scores', scorePlayerIndex, 'score'],
             0,
             score => score + 1
         )

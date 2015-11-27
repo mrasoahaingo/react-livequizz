@@ -10,6 +10,7 @@ const initialState = fromJS({
     players: [],
     archive: [],
     out: [],
+    scores: [],
     showResponse: false
 });
 
