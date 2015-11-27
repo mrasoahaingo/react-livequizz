@@ -20,7 +20,7 @@ export function addPlayer(state, playerId) {
 export function setPlayers(state, players) {
     const playerList = fromJS(players);
     const scores = playerList.reduce((scores, player) => scores.push(Map({player, score: 0})), List());
-    return this.state.
+    return state
         .set('scores', scores)
         .set('players', playerList);
 }

@@ -10,7 +10,7 @@ export default class Player extends React.Component {
             <h1>
                 Hello {this.props.player}
                 {this.props.quizz ?
-                    <button disabled={this.props.buzzer && this.props.buzzer !== this.props.player}
+                    <button disabled={this.props.showResponse || (this.props.buzzer && this.props.buzzer !== this.props.player)}
                     onClick={this.handleBuzz.bind(this)}>BUZZ</button> : ''}
             </h1>
         )
