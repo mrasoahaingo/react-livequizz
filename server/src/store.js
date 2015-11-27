@@ -3,7 +3,7 @@ import { fromJS } from 'immutable'
 
 import reducer from './reducer'
 
-const initialState = fromJS({
+export const initialState = fromJS({
     buzzer: null,
     quizz: null,
     entries: [],

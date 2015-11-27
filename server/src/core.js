@@ -9,7 +9,7 @@ export function addEntry(state, entry) {
 }
 
 export function addPlayer(state, playerId) {
-    if(state.get('players', List()).includes(playerId)) {
+    if(state.get('players').includes(playerId)) {
         return state;
     }
     return state
@@ -69,7 +69,7 @@ export function rightResponse(state) {
         return state;
     }
     const quizzToBeArchived = state.get('quizz').set('buzzer', playerId);
-    const scorePlayerIndex = state.get('scores').findIndex(score => (score.get('player') === playerId))
+    const scorePlayerIndex = state.get('scores', List()).findIndex(score => (score.get('player') === playerId))
     return state
         .set('buzzer', null)
         .updateIn(

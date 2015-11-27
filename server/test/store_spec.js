@@ -1,12 +1,13 @@
 import { Map, fromJS } from 'immutable'
 import { expect } from 'chai'
 
-import makeStore from '../src/store'
+import { keyIn } from '../src/utils'
+import makeStore, { initialState } from '../src/store'
 
 describe('store', () => {
     it('is a Redux store configured with the correct reducer', () => {
         const store = makeStore();
-        expect(store.getState()).to.equal(Map());
+        expect(store.getState()).to.equal(Map(initialState));
 
         store.dispatch({
             type: 'SET_ENTRIES',
@@ -15,7 +16,7 @@ describe('store', () => {
                 { question: 'What is Sandy lastname', response: 'Kilo' }
             ]
         });
-        expect(store.getState()).to.equal(fromJS({
+        expect(store.getState().filter(keyIn('entries'))).to.equal(fromJS({
             entries: [
                 { question: 'Where is Bryan', response: 'In the kitchen' },
                 { question: 'What is Sandy lastname', response: 'Kilo' }

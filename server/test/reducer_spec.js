@@ -1,6 +1,7 @@
 import {Map, fromJS} from 'immutable'
 import { expect } from 'chai'
 
+import { keyIn } from '../src/utils'
 import reducer from '../src/reducer'
 
 describe('reducer', () => {
@@ -25,10 +26,10 @@ describe('reducer', () => {
         const action = { type: 'SET_PLAYERS', players };
         const nextState = reducer(initialState, action);
         expect(nextState).to.equal(fromJS({
-            scores: {
-                Bryan: 0,
-                Sandy: 0
-            },
+            scores: [
+                { player: 'Bryan', score: 0 },
+                { player: 'Sandy', score: 0 }
+            ],
             players: [ 'Bryan', 'Sandy' ]
         }))
     });
@@ -42,7 +43,7 @@ describe('reducer', () => {
         });
         const action = { type: 'NEXT' };
         const nextState = reducer(initialState, action);
-        expect(nextState).to.equal(fromJS({
+        expect(nextState.filter(keyIn('quizz', 'entries'))).to.equal(fromJS({
             quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
             entries: [
                 { question: 'What is Sandy lastname', response: 'Kilo' }
@@ -59,7 +60,7 @@ describe('reducer', () => {
         });
         const action = { type: 'BUZZ', playerId: 'Bryan' };
         const nextState = reducer(initialState, action);
-        expect(nextState).to.equal(fromJS({
+        expect(nextState.filter(keyIn('buzzer', 'quizz', 'entries'))).to.equal(fromJS({
             buzzer: 'Bryan',
             quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
             entries: [
@@ -72,16 +73,19 @@ describe('reducer', () => {
         const initialState = fromJS({
             buzzer: 'Bryan',
             quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
+            scores: [
+                { player: 'Bryan', score: 0 }
+            ],
             entries: [
                 { question: 'What is Sandy lastname', response: 'Kilo' }
             ]
         });
         const action = { type: 'RIGHT_RESPONSE' };
         const nextState = reducer(initialState, action);
-        expect(nextState).to.equal(fromJS({
-            scores: {
-                'Bryan': 1
-            },
+        expect(nextState.filter(keyIn('scores', 'entries', 'archive'))).to.equal(fromJS({
+            scores: [
+                { player: 'Bryan', score: 1 }
+            ],
             entries: [
                 { question: 'What is Sandy lastname', response: 'Kilo' }
             ],
@@ -101,7 +105,7 @@ describe('reducer', () => {
         });
         const action = { type: 'WRONG_RESPONSE' };
         const nextState = reducer(initialState, action);
-        expect(nextState).to.equal(fromJS({
+        expect(nextState.filter(keyIn('out', 'quizz', 'entries'))).to.equal(fromJS({
             out: [ 'Bryan' ],
             quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
             entries: [
@@ -139,14 +143,14 @@ describe('reducer', () => {
             { type: 'NEXT' }
         ];
         const nextState = actions.reduce(reducer, Map());
-        expect(nextState).to.equal(fromJS({
+        expect(nextState.filter(keyIn('players', 'scores', 'winner', 'archive'))).to.equal(fromJS({
             players: [ 'Mic', 'Fran', 'Eva', 'Lana' ],
-            scores: {
-                Mic: 2,
-                Fran: 0,
-                Eva: 0,
-                Lana: 0
-            },
+            scores: [
+                { player: 'Mic', score: 2 },
+                { player: 'Fran', score: 0 },
+                { player: 'Eva', score: 0 },
+                { player: 'Lana', score: 0 }
+            ],
             winner: 'Mic',
             archive: [
                 { question: 'Where is Bryan', response: 'In the kitchen', buzzer: 'Mic' },
@@ -171,14 +175,14 @@ describe('reducer', () => {
             { type: 'NEXT' }
         ];
         const nextState = actions.reduce(reducer, Map());
-        expect(nextState).to.equal(fromJS({
+        expect(nextState.filter(keyIn('players', 'scores', 'entries', 'archive'))).to.equal(fromJS({
             players: [ 'Mic', 'Fran', 'Eva', 'Lana' ],
-            scores: {
-                Mic: 1,
-                Fran: 1,
-                Eva: 0,
-                Lana: 0
-            },
+            scores: [
+                { player: 'Mic', score: 1 },
+                { player: 'Fran', score: 1 },
+                { player: 'Eva', score: 0 },
+                { player: 'Lana', score: 0 }
+            ],
             entries: [
                 { question: 'Bonus' }
             ],
@@ -192,12 +196,12 @@ describe('reducer', () => {
     it('handle sequencial actions with tie break time', () => {
         const tieBreakState = fromJS({
             players: [ 'Mic', 'Fran', 'Eva', 'Lana' ],
-            scores: {
-                Mic: 1,
-                Fran: 1,
-                Eva: 0,
-                Lana: 0
-            },
+            scores: [
+                { player: 'Mic', score: 1 },
+                { player: 'Fran', score: 1 },
+                { player: 'Eva', score: 0 },
+                { player: 'Lana', score: 0 }
+            ],
             entries: [
                 { question: 'Bonus' }
             ],
@@ -213,14 +217,14 @@ describe('reducer', () => {
             { type: 'NEXT'}
         ];
         const nextState = actions.reduce(reducer, tieBreakState);
-        expect(nextState).to.equal(fromJS({
+        expect(nextState.filter(keyIn('players', 'scores', 'winner', 'archive'))).to.equal(fromJS({
             players: [ 'Mic', 'Fran', 'Eva', 'Lana' ],
-            scores: {
-                Mic: 1,
-                Fran: 2,
-                Eva: 0,
-                Lana: 0
-            },
+            scores: [
+                { player: 'Mic', score: 1 },
+                { player: 'Fran', score: 2 },
+                { player: 'Eva', score: 0 },
+                { player: 'Lana', score: 0 }
+            ],
             winner: 'Fran',
             archive: [
                 { question: 'Where is Bryan', response: 'In the kitchen', buzzer: 'Mic' },

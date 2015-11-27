@@ -1,6 +1,7 @@
 import { List, Map, OrderedMap } from 'immutable'
 import { expect } from 'chai'
 
+import { keyIn } from '../src/utils'
 import { setEntries, setPlayers, next, buzz, rightResponse, wrongResponse } from '../src/core'
 
 describe('application initialization', () => {
@@ -25,10 +26,10 @@ describe('application initialization', () => {
         const players = [ 'Bryan', 'Sandy' ];
         const nextState = setPlayers(state, players);
         expect(nextState).to.equal(Map({
-            scores: Map({
-                Bryan: 0,
-                Sandy: 0
-            }),
+            scores: List.of(
+                Map({ player: 'Bryan', score: 0}),
+                Map({ player: 'Sandy', score: 0})
+            ),
             players: List.of( 'Bryan', 'Sandy' )
         }));
     });
@@ -46,7 +47,7 @@ describe('application logic', () => {
                 )
             });
             const nextState = next(state);
-            expect(nextState).to.equal(Map({
+            expect(nextState.filter(keyIn('quizz', 'entries'))).to.equal(Map({
                 quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
                 entries : List.of(
                     Map({ question: 'What is Sandy lastname', response: 'Kilo' })
@@ -56,36 +57,36 @@ describe('application logic', () => {
 
         it('have a winner', () => {
             const state = Map({
-                scores: Map({
-                    Bryan: 3,
-                    Sandy: 1
-                }),
+                scores: List.of(
+                    Map({ player: 'Bryan', score: 3 }),
+                    Map({ player: 'Sandy', score: 1 })
+                ),
                 entries: List()
             });
             const nextState = next(state);
-            expect(nextState).to.equal(Map({
-                scores: Map({
-                    Bryan: 3,
-                    Sandy: 1
-                }),
+            expect(nextState.filter(keyIn('scores', 'winner'))).to.equal(Map({
+                scores: List.of(
+                    Map({ player: 'Bryan', score: 3 }),
+                    Map({ player: 'Sandy', score: 1 })
+                ),
                 winner: 'Bryan'
             }));
         });
 
         it('tied winner', () => {
             const state = Map({
-                scores: Map({
-                    Bryan: 3,
-                    Sandy: 3
-                }),
+                scores: List.of(
+                    Map({ player: 'Bryan', score: 3 }),
+                    Map({ player: 'Sandy', score: 3 })
+                ),
                 entries: List()
             });
             const nextState = next(state);
             expect(nextState).to.equal(Map({
-                scores: Map({
-                    Bryan: 3,
-                    Sandy: 3
-                }),
+                scores: List.of(
+                    Map({ player: 'Bryan', score: 3 }),
+                    Map({ player: 'Sandy', score: 3 })
+                ),
                 entries: List.of(
                     Map({ question: 'Bonus' })
                 )
@@ -102,7 +103,7 @@ describe('application logic', () => {
                 )
             });
             const nextState = buzz(state, 'Bryan');
-            expect(nextState).to.equal(Map({
+            expect(nextState.filter(keyIn('buzzer', 'quizz', 'entries'))).to.equal(Map({
                 buzzer: 'Bryan',
                 quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
                 entries : List.of(
@@ -127,11 +128,16 @@ describe('application logic', () => {
         it('give the right response', () => {
             const state = Map({
                 buzzer: 'Bryan',
+                scores: List.of(
+                    Map({ player: 'Bryan', score: 0 })
+                ),
                 quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' })
             });
             const nextState = rightResponse(state);
-            expect(nextState).to.equal(Map({
-                scores: Map({ 'Bryan': 1 }),
+            expect(nextState.filter(keyIn('scores', 'archive'))).to.equal(Map({
+                scores: List.of(
+                    Map({ player: 'Bryan', score: 1 })
+                ),
                 archive: List.of(
                     Map({ question: 'Where is Bryan', response: 'In the kitchen', buzzer: 'Bryan' })
                 )
@@ -144,7 +150,7 @@ describe('application logic', () => {
                 quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' })
             });
             const nextState = wrongResponse(state);
-            expect(nextState).to.equal(Map({
+            expect(nextState.filter(keyIn('out', 'quizz'))).to.equal(Map({
                 out: List.of('Bryan'),
                 quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' })
             }));
