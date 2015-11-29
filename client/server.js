@@ -17,12 +17,7 @@ app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.use('/icons', express.static(__dirname + '/src/icons'));
+app.use('/svg', express.static(__dirname + '/src/svg'));
+app.use('/assets', express.static(__dirname + '/src/assets'));
 
-app.listen(3000, 'localhost', function(err) {
-    if (err) {
-        console.log(err);
-        return;
-    }
-    console.log('Listening at http://localhost:3000');
-});
+app.listen(3000);

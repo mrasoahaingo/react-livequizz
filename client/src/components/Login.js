@@ -1,4 +1,5 @@
 import React from 'react'
+import Icon from './Icon'
 
 export default class Login extends React.Component {
     setPlayerName (event) {
@@ -21,9 +22,9 @@ export default class Login extends React.Component {
     }
     render () {
         return (
-            <form>
-            <input ref="playerId" type="text"/>
-            <button onClick={this.setPlayerName.bind(this)}>go</button>
+            <form className="Login" onSubmit={this.setPlayerName.bind(this)}>
+                <label className="Login__Icon" htmlFor="login"><Icon name="person"/></label>
+                <input id="login" className="Login__Input" ref="playerId" type="text" placeholder="Pseudo" autoFocus={true}/>
             </form>
         )
     }

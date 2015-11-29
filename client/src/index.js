@@ -1,3 +1,5 @@
+import './styl/app.styl'
+
 import React from 'react'
 import { render } from 'react-dom'
 import { compose, createStore, applyMiddleware } from 'redux'
@@ -12,7 +14,7 @@ import { setState } from './actions'
 
 import { AppContainer } from './components/App'
 
-const socket = io('http://localhost:8090');
+const socket = io('http://192.168.0.15:8090');
 socket.on('state', state =>
   store.dispatch(setState(state))
 );
@@ -25,9 +27,12 @@ const createStoreWithMiddleware = compose(
 const store = createStoreWithMiddleware(reducer);
 
 render(
-    <div>
+    <div className="AppContainer">
+        <div className="Bg"/>
         <Provider store={store}>
-            <AppContainer/>
+            <div className="App">
+                <AppContainer/>
+            </div>
         </Provider>
         <DebugPanel top right bottom>
             <DevTools store={store} monitor={LogMonitor} visibleOnLoad={false}/>

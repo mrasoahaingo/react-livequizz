@@ -2,6 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var nib = require('nib');
 var jeet = require('jeet');
+var poststylus = require('poststylus');
 
 module.exports = {
     devtool: 'eval',
@@ -24,12 +25,20 @@ module.exports = {
             loaders: ['babel'],
             include: path.join(__dirname, 'src')
         },{
-            test: /\.styl/,
+            test: /\.styl$/,
             loaders: ['style', 'css', 'stylus'],
+            include: path.join(__dirname, 'src')
+        },{
+            test: /\.svg/,
+            loaders: ['raw'],
+            include: path.join(__dirname, 'src')
+        },{
+            test: /\.(jpeg)/,
+            loaders: ['file'],
             include: path.join(__dirname, 'src')
         }]
     },
     stylus: {
-        use: [nib(), jeet()]
+        use: [nib(), jeet(), poststylus('lost')]
     }
 };

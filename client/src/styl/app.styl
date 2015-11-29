@@ -1,0 +1,167 @@
+@import 'nib'
+@import 'jeet'
+
+@import 'reset'
+@import 'normalize'
+
+@import url('https://fonts.googleapis.com/css?family=Pacifico');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,300,700');
+
+$textColor = alpha(#FFF, 0.9)
+
+*
+    box-sizing border-box
+
+
+html, body
+    background:
+        linear-gradient(45deg, hsla(274, 93%, 47%, 1) 0%, hsla(274, 93%, 47%, 0) 70%),
+        linear-gradient(135deg, hsla(307, 98%, 49%, 1) 10%, hsla(307, 98%, 49%, 0) 80%),
+        linear-gradient(225deg, hsla(268, 94%, 49%, 1) 10%, hsla(268, 94%, 49%, 0) 80%),
+        linear-gradient(315deg, hsla(271, 96%, 43%, 1) 100%, hsla(271, 96%, 43%, 0) 70%);
+    color $textColor
+    font-family 'Open Sans'
+    font-weight 400
+    position relative
+    size(100%, 100%)
+    user-select none
+
+input
+    font-family 'Pacifico'
+h1, h2
+    font-family 'Pacifico'
+    font-size 60px
+    line-height 75px
+button:disabled
+    opacity 0.4
+
+icon($width, $height)
+    size($width, $height)
+    svg
+        size(100%, 100%)
+        vertical-align: sub
+        *
+            all inherit
+
+.Icon
+    display inline-block
+    vertical-align middle
+    icon(80%, 80%)
+    fill #FFF
+
+.Root, .AppContainer, .Bg
+    absolute top 0 right 0 bottom 0 left 0
+
+.Bg
+    background-image url(/assets/bg.jpeg)
+    background-position center bottom
+    filter grayscale()
+    -webkit-filter grayscale()
+    opacity 0.2
+    @media screen and (orientation:portrait)
+        background-size auto 100%
+    @media screen and (orientation:landscape)
+        background-size 100% auto
+
+
+.App
+    size(100%, 100%)
+    lost-align center
+
+.Login
+    height 300px
+    lost-column 1/2
+    text-align center
+
+    &__Icon
+        border-radius 100%
+        border 2px solid alpha(#FFF, 0.95)
+        box-shadow 0 0 0 20px alpha(#000, 0.1)
+        background alpha(#000, 0.1)
+        display block
+        line-height 150px
+        margin auto
+        size(150px, 150px)
+
+    &__Input
+        background alpha(#000, 0.2)
+        border none
+        font-size 30px
+        outline none
+        padding 10px
+        margin 40px auto
+        text-align center
+        &:placeholder
+            color $textColor
+
+.Player
+    text-align center
+
+    &__Buzzer
+        border none
+        background none
+        display inline-block
+        outline none
+        size(300px, 300px)
+
+    &:disabled
+        .Icon
+            opacity 0.3
+
+.Admin
+    text-align center
+
+    &__Next, &__Action
+        border none
+        background none
+        display inline-block
+        outline none
+        size(300px, 300px)
+    &__Action
+        size(100px, 100px)
+
+.Dashboard
+    size(95%, 95%)
+
+    &__Quizz
+        height 100%
+        lost-column 3/4
+        text-align center
+        lost-align center
+    &__Scores
+        height 100%
+        lost-column 1/4
+
+.Quizz
+    &__Question, &__Response
+        margin-bottom 30px
+
+.Scores
+    list-style none
+    position relative
+
+    &__Item
+        absolute top 0 right 0 left 0
+        background-color alpha(#000, 0.2)
+        border-radius 5px
+        overflow ellipsis
+        padding 5px 10px 5px 60px
+
+        &--Selected
+            background-color alpha(#000, 0.6)
+        &--Disabled
+            opacity 0.2
+
+        &:before
+            absolute top 0 bottom 0 left 0
+            background-color alpha(#000, 0.2)
+            content attr(data-score)
+            display inline-block
+            font-weight bold
+            line-height 32px
+            size(50px, 100%)
+            text-align center
+
+.Winner
+    lost-align center
+    text-align center
