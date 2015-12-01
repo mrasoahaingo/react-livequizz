@@ -12,7 +12,7 @@ export default class Timer extends React.Component {
         this.tick();
     }
     componentDidUpdate() {
-        if (this.props.startCountDown && this.timeout === undefined) {
+        if (this.props.startCountDown) {
             this.tick();
         } else {
             this.setState({
@@ -27,7 +27,6 @@ export default class Timer extends React.Component {
         this.timer && clearTimeout(this.timer);
         this.timeout = setTimeout(() => {
             if (!this.props.startCountDown || this.state.count <= 0) {
-                this.timeout = undefined;
                 return;
             }
             this.setState({
