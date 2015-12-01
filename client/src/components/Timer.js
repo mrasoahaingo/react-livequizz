@@ -5,40 +5,37 @@ export default class Timer extends React.Component {
     constructor () {
         super();
         this.state = {
-            count: 30
+            count: 10
         };
     }
-    componentDidMount() {
-        this.tick();
+    componentWillReceiveProps() {
+        this.startTimer();
     }
-    componentDidUpdate() {
-        if (this.props.startCountDown) {
-            this.tick();
-        } else {
-            this.setState({
-                count: 30
-            });
-        }
-    }
-    componentWillUnmount () {
+    componentWillUnMount() {
         clearTimeout(this.timeout);
     }
+    startTimer() {
+        this.setState({
+            count: 10
+        });
+        this.tick();
+    }
     tick () {
-        this.timer && clearTimeout(this.timer);
+        this.timeout && clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
-            if (!this.props.startCountDown || this.state.count <= 0) {
-                return;
-            }
             this.setState({
                 count: this.state.count - 1
             });
+            if (this.state.count > 0) {
+                this.tick();
+            }
         }, 1000);
     }
     render (){
         const yPos = this.props.startCountDown ? 1 : 0;
-        const springConfig = [400, 20];
+        const springConfig = [500, 10];
         const style = {
-            scale: spring(yPos, springConfig)
+            scale: spring(yPos)
         };
         return(
             <Motion style={style}>

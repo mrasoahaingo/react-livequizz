@@ -51,7 +51,7 @@ export default class DashBoard extends React.Component {
                     </ul>
                 </div>
                 <div className="Dashboard__Quizz">
-                    <Timer {...this.props}/>
+                    <Timer startCountDown={this.props.startCountDown}/>
                     <div className="Quizz">
                         <h2 className="Quizz__Question">{this.props.quizz ? this.props.quizz.question : ''}</h2>
                         <h3 className="Quizz__Response">{this.props.quizz && this.props.showResponse ? this.props.quizz.response : ''}</h3>
