@@ -1,5 +1,13 @@
 import { List, Map, fromJS } from 'immutable'
 
+export function startTimer(state) {
+    return state.set('startCountDown', true);
+}
+
+export function stopTimer(state) {
+    return state.set('startCountDown', false);
+}
+
 export function setEntries(state, entries) {
     return state.set('entries', fromJS(entries));
 }
@@ -8,25 +16,26 @@ export function addEntry(state, entry) {
     return state.update('entries', entries => entries.push(fromJS(entry)));
 }
 
-export function addPlayer(state, playerId) {
-    if(state.get('players').includes(playerId)) {
+export function addPlayer(state, playerId, id = -1) {
+    if(state.get('players', List()).find(player => player.get('player') === playerId)) {
         return state;
     }
     return state
-        .update('scores', List(), scores => scores.push(Map({player: playerId, score: 0})))
-        .update('players', List(), players => players.push(playerId));
+        .update('players', List(), players => players.push(Map({
+            id: id,
+            player: playerId,
+            score: 0
+        })));
 }
 
-export function setPlayers(state, players) {
-    const playerList = fromJS(players);
-    const scores = playerList.reduce((scores, player) => scores.push(Map({player, score: 0})), List());
+export function removePlayer(state, playerId) {
+    const playerIndex = state.get('players', List()).findIndex(player => player.get('player') === playerId);
     return state
-        .set('scores', scores)
-        .set('players', playerList);
+        .update('players', List(), players => players.remove(playerIndex));
 }
 
 function getWinnerOrTie(state) {
-    const [first, second] = state.get('scores').sort((a, b) => (a.get('score') < b.get('score')) ).take(2);
+    const [first, second] = state.get('players').sort((a, b) => (a.get('score') < b.get('score'))).take(2);
 
     if(first.get('score') === second.get('score')) {
         return addEntry(state, { question: 'Bonus' });
@@ -69,11 +78,11 @@ export function rightResponse(state) {
         return state;
     }
     const quizzToBeArchived = state.get('quizz').set('buzzer', playerId);
-    const scorePlayerIndex = state.get('scores', List()).findIndex(score => (score.get('player') === playerId))
+    const playerIndex = state.get('players', List()).findIndex(player => (player.get('player') === playerId))
     return state
         .set('buzzer', null)
         .updateIn(
-            ['scores', scorePlayerIndex, 'score'],
+            ['players', playerIndex, 'score'],
             0,
             score => score + 1
         )

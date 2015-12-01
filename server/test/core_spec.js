@@ -1,123 +1,126 @@
-import { List, Map, OrderedMap } from 'immutable'
+import { fromJS } from 'immutable'
 import { expect } from 'chai'
 
 import { keyIn } from '../src/utils'
-import { setEntries, setPlayers, next, buzz, rightResponse, wrongResponse } from '../src/core'
+import { setEntries, setPlayers, next, buzz, rightResponse, wrongResponse, removePlayer } from '../src/core'
 
 describe('application initialization', () => {
 
     it('set quizz entries', () => {
-        const state = Map();
+        const state = fromJS({});
         const entries = [
             { question: 'Where is Bryan', response: 'In the kitchen' },
             { question: 'What is Sandy lastname', response: 'Kilo' }
         ];
         const nextState = setEntries(state, entries);
-        expect(nextState).to.equal(Map({
-            entries: List.of(
-                Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
-                Map({ question: 'What is Sandy lastname', response: 'Kilo' })
-            )
+        expect(nextState).to.equal(fromJS({
+            entries: [
+                { question: 'Where is Bryan', response: 'In the kitchen' },
+                { question: 'What is Sandy lastname', response: 'Kilo' }
+            ]
         }));
     });
-
-    it('set players', () => {
-        const state = Map();
-        const players = [ 'Bryan', 'Sandy' ];
-        const nextState = setPlayers(state, players);
-        expect(nextState).to.equal(Map({
-            scores: List.of(
-                Map({ player: 'Bryan', score: 0}),
-                Map({ player: 'Sandy', score: 0})
-            ),
-            players: List.of( 'Bryan', 'Sandy' )
-        }));
-    });
-
 });
 
 describe('application logic', () => {
+    describe('player', () => {
+        it('remove player', () => {
+            const state = fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 0 },
+                    { id: 2, player: 'Sandy', score: 0 }
+                ]
+            });
+            const nextState = removePlayer(state, 'Bryan');
+            expect(nextState).to.equal(fromJS({
+                players: [
+                    { id: 2, player: 'Sandy', score: 0 }
+                ]
+            }));
+        });
+    });
+
     describe('next', () => {
         it('pick the next question and clear outted player', () => {
-            const state = Map({
-                out: List.of('Sandy', 'Bryan'),
-                entries: List.of(
-                    Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
-                    Map({ question: 'What is Sandy lastname', response: 'Kilo' })
-                )
+            const state = fromJS({
+                out: ['Sandy', 'Bryan'],
+                entries: [
+                    { question: 'Where is Bryan', response: 'In the kitchen' },
+                    { question: 'What is Sandy lastname', response: 'Kilo' }
+                ]
             });
             const nextState = next(state);
-            expect(nextState.filter(keyIn('quizz', 'entries'))).to.equal(Map({
-                quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
-                entries : List.of(
-                    Map({ question: 'What is Sandy lastname', response: 'Kilo' })
-                )
+            expect(nextState.filter(keyIn('quizz', 'entries'))).to.equal(fromJS({
+                quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
+                entries : [
+                    { question: 'What is Sandy lastname', response: 'Kilo' }
+                ]
             }));
         });
 
         it('have a winner', () => {
-            const state = Map({
-                scores: List.of(
-                    Map({ player: 'Bryan', score: 3 }),
-                    Map({ player: 'Sandy', score: 1 })
-                ),
-                entries: List()
+            const state = fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 3 },
+                    { id: 2, player: 'Sandy', score: 1 }
+                ],
+                entries: []
             });
             const nextState = next(state);
-            expect(nextState.filter(keyIn('scores', 'winner'))).to.equal(Map({
-                scores: List.of(
-                    Map({ player: 'Bryan', score: 3 }),
-                    Map({ player: 'Sandy', score: 1 })
-                ),
+            expect(nextState.filter(keyIn('players', 'winner'))).to.equal(fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 3 },
+                    { id: 2, player: 'Sandy', score: 1 }
+                ],
                 winner: 'Bryan'
             }));
         });
 
         it('tied winner', () => {
-            const state = Map({
-                scores: List.of(
-                    Map({ player: 'Bryan', score: 3 }),
-                    Map({ player: 'Sandy', score: 3 })
-                ),
-                entries: List()
+            const state = fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 3 },
+                    { id: 2, player: 'Sandy', score: 3 }
+                ],
+                entries: []
             });
             const nextState = next(state);
-            expect(nextState).to.equal(Map({
-                scores: List.of(
-                    Map({ player: 'Bryan', score: 3 }),
-                    Map({ player: 'Sandy', score: 3 })
-                ),
-                entries: List.of(
-                    Map({ question: 'Bonus' })
-                )
+            expect(nextState).to.equal(fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 3 },
+                    { id: 2, player: 'Sandy', score: 3 }
+                ],
+                entries: [
+                    { question: 'Bonus' }
+                ]
             }));
         });
     });
 
     describe('buzz', () => {
         it('set the player to buzzer', () => {
-            const state = Map({
-                quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
-                entries : List.of(
-                    Map({ question: 'What is Sandy lastname', response: 'Kilo' })
-                )
+            const state = fromJS({
+                quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
+                entries : [
+                    { question: 'What is Sandy lastname', response: 'Kilo' }
+                ]
             });
             const nextState = buzz(state, 'Bryan');
-            expect(nextState.filter(keyIn('buzzer', 'quizz', 'entries'))).to.equal(Map({
+            expect(nextState.filter(keyIn('buzzer', 'quizz', 'entries'))).to.equal(fromJS({
                 buzzer: 'Bryan',
-                quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
-                entries : List.of(
-                    Map({ question: 'What is Sandy lastname', response: 'Kilo' })
-                )
+                quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
+                entries : [
+                    { question: 'What is Sandy lastname', response: 'Kilo' }
+                ]
             }));
         });
         it('cannot buzz when player is out', () => {
-            const state = Map({
-                out: List.of('Sandy'),
-                quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' }),
-                entries : List.of(
-                    Map({ question: 'What is Sandy lastname', response: 'Kilo' })
-                )
+            const state = fromJS({
+                out: ['Sandy'],
+                quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
+                entries : [
+                    { question: 'What is Sandy lastname', response: 'Kilo' }
+                ]
             });
             const nextState = buzz(state, 'Sandy');
             expect(nextState).to.equal(state);
@@ -126,33 +129,33 @@ describe('application logic', () => {
 
     describe('responding', () => {
         it('give the right response', () => {
-            const state = Map({
+            const state = fromJS({
                 buzzer: 'Bryan',
-                scores: List.of(
-                    Map({ player: 'Bryan', score: 0 })
-                ),
-                quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' })
+                players: [
+                    { id: 1, player: 'Bryan', score: 0 }
+                ],
+                quizz: { question: 'Where is Bryan', response: 'In the kitchen' }
             });
             const nextState = rightResponse(state);
-            expect(nextState.filter(keyIn('scores', 'archive'))).to.equal(Map({
-                scores: List.of(
-                    Map({ player: 'Bryan', score: 1 })
-                ),
-                archive: List.of(
-                    Map({ question: 'Where is Bryan', response: 'In the kitchen', buzzer: 'Bryan' })
-                )
+            expect(nextState.filter(keyIn('players', 'archive'))).to.equal(fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 1 }
+                ],
+                archive: [
+                    { question: 'Where is Bryan', response: 'In the kitchen', buzzer: 'Bryan' }
+                ]
             }));
         });
 
         it('give the wrong response', () => {
-            const state = Map({
+            const state = fromJS({
                 buzzer: 'Bryan',
-                quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' })
+                quizz: { question: 'Where is Bryan', response: 'In the kitchen' }
             });
             const nextState = wrongResponse(state);
-            expect(nextState.filter(keyIn('out', 'quizz'))).to.equal(Map({
-                out: List.of('Bryan'),
-                quizz: Map({ question: 'Where is Bryan', response: 'In the kitchen' })
+            expect(nextState.filter(keyIn('out', 'quizz'))).to.equal(fromJS({
+                out: ['Bryan'],
+                quizz: { question: 'Where is Bryan', response: 'In the kitchen' }
             }));
         });
     });

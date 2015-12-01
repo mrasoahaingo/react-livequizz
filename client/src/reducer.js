@@ -5,6 +5,7 @@ function setState(state, newState) {
 }
 
 function addPlayer(state, player) {
+
     return state
         .remove('isAdmin')
         .remove('isGuest')

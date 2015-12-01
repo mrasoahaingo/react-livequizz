@@ -1,4 +1,4 @@
-import {Map, fromJS} from 'immutable'
+import { fromJS } from 'immutable'
 import { expect } from 'chai'
 
 import { keyIn } from '../src/utils'
@@ -17,20 +17,6 @@ describe('reducer', () => {
                 { question: 'Where is Bryan', response: 'In the kitchen' },
                 { question: 'What is Sandy lastname', response: 'Kilo' }
             ]
-        }))
-    });
-
-    it('handle set players', () => {
-        const initialState = Map();
-        const players = [ 'Bryan', 'Sandy' ];
-        const action = { type: 'SET_PLAYERS', players };
-        const nextState = reducer(initialState, action);
-        expect(nextState).to.equal(fromJS({
-            scores: [
-                { player: 'Bryan', score: 0 },
-                { player: 'Sandy', score: 0 }
-            ],
-            players: [ 'Bryan', 'Sandy' ]
         }))
     });
 
@@ -73,8 +59,8 @@ describe('reducer', () => {
         const initialState = fromJS({
             buzzer: 'Bryan',
             quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
-            scores: [
-                { player: 'Bryan', score: 0 }
+            players: [
+                { id: 1, player: 'Bryan', score: 0 }
             ],
             entries: [
                 { question: 'What is Sandy lastname', response: 'Kilo' }
@@ -82,9 +68,9 @@ describe('reducer', () => {
         });
         const action = { type: 'RIGHT_RESPONSE' };
         const nextState = reducer(initialState, action);
-        expect(nextState.filter(keyIn('scores', 'entries', 'archive'))).to.equal(fromJS({
-            scores: [
-                { player: 'Bryan', score: 1 }
+        expect(nextState.filter(keyIn('players', 'entries', 'archive'))).to.equal(fromJS({
+            players: [
+                { id: 1, player: 'Bryan', score: 1 }
             ],
             entries: [
                 { question: 'What is Sandy lastname', response: 'Kilo' }
@@ -120,9 +106,10 @@ describe('reducer', () => {
                 { question: 'Where is Bryan', response: 'In the kitchen' },
                 { question: 'What is Sandy lastname', response: 'Kilo' }
             ] },
-            { type: 'SET_PLAYERS', players: [ 'Mic', 'Fran' ] },
-            { type: 'ADD_PLAYER', player: 'Eva' },
-            { type: 'ADD_PLAYER', player: 'Lana' },
+            { type: 'ADD_PLAYER', player: 'Mic', id: 1 },
+            { type: 'ADD_PLAYER', player: 'Fran', id: 2 },
+            { type: 'ADD_PLAYER', player: 'Eva', id: 3 },
+            { type: 'ADD_PLAYER', player: 'Lana', id: 4 },
 
             { type: 'NEXT' },
 
@@ -142,14 +129,13 @@ describe('reducer', () => {
             { type: 'RIGHT_RESPONSE' },
             { type: 'NEXT' }
         ];
-        const nextState = actions.reduce(reducer, Map());
+        const nextState = actions.reduce(reducer, fromJS({}));
         expect(nextState.filter(keyIn('players', 'scores', 'winner', 'archive'))).to.equal(fromJS({
-            players: [ 'Mic', 'Fran', 'Eva', 'Lana' ],
-            scores: [
-                { player: 'Mic', score: 2 },
-                { player: 'Fran', score: 0 },
-                { player: 'Eva', score: 0 },
-                { player: 'Lana', score: 0 }
+            players: [
+                { id: 1, player: 'Mic', score: 2 },
+                { id: 2, player: 'Fran', score: 0 },
+                { id: 3, player: 'Eva', score: 0 },
+                { id: 4, player: 'Lana', score: 0 }
             ],
             winner: 'Mic',
             archive: [
@@ -165,7 +151,8 @@ describe('reducer', () => {
                 { question: 'Where is Bryan', response: 'In the kitchen' },
                 { question: 'What is Sandy lastname', response: 'Kilo' }
             ] },
-            { type: 'SET_PLAYERS', players: [ 'Mic', 'Fran', 'Eva', 'Lana' ] },
+            { type: 'ADD_PLAYER', player: 'Mic', id: 1 },
+            { type: 'ADD_PLAYER', player: 'Fran', id: 2 },
             { type: 'NEXT' },
             { type: 'BUZZ', playerId: 'Mic' },
             { type: 'RIGHT_RESPONSE' },
@@ -174,14 +161,11 @@ describe('reducer', () => {
             { type: 'RIGHT_RESPONSE' },
             { type: 'NEXT' }
         ];
-        const nextState = actions.reduce(reducer, Map());
+        const nextState = actions.reduce(reducer, fromJS({}));
         expect(nextState.filter(keyIn('players', 'scores', 'entries', 'archive'))).to.equal(fromJS({
-            players: [ 'Mic', 'Fran', 'Eva', 'Lana' ],
-            scores: [
-                { player: 'Mic', score: 1 },
-                { player: 'Fran', score: 1 },
-                { player: 'Eva', score: 0 },
-                { player: 'Lana', score: 0 }
+            players: [
+                { id: 1, player: 'Mic', score: 1 },
+                { id: 2, player: 'Fran', score: 1 }
             ],
             entries: [
                 { question: 'Bonus' }
@@ -195,12 +179,9 @@ describe('reducer', () => {
 
     it('handle sequencial actions with tie break time', () => {
         const tieBreakState = fromJS({
-            players: [ 'Mic', 'Fran', 'Eva', 'Lana' ],
-            scores: [
-                { player: 'Mic', score: 1 },
-                { player: 'Fran', score: 1 },
-                { player: 'Eva', score: 0 },
-                { player: 'Lana', score: 0 }
+            players: [
+                { id: 1, player: 'Mic', score: 1 },
+                { id: 2, player: 'Fran', score: 1 }
             ],
             entries: [
                 { question: 'Bonus' }
@@ -218,12 +199,9 @@ describe('reducer', () => {
         ];
         const nextState = actions.reduce(reducer, tieBreakState);
         expect(nextState.filter(keyIn('players', 'scores', 'winner', 'archive'))).to.equal(fromJS({
-            players: [ 'Mic', 'Fran', 'Eva', 'Lana' ],
-            scores: [
-                { player: 'Mic', score: 1 },
-                { player: 'Fran', score: 2 },
-                { player: 'Eva', score: 0 },
-                { player: 'Lana', score: 0 }
+            players: [
+                { id: 1, player: 'Mic', score: 1 },
+                { id: 2, player: 'Fran', score: 2 }
             ],
             winner: 'Fran',
             archive: [

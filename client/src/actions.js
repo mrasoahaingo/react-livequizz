@@ -62,3 +62,10 @@ export function toggleResponse () {
         type: 'TOGGLE_RESPONSE'
     }
 }
+
+export function resetTimer() {
+    return {
+        meta: { remote: true },
+        type: 'RESET_TIMER'
+    }
+}

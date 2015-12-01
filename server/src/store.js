@@ -11,7 +11,8 @@ export const initialState = fromJS({
     archive: [],
     out: [],
     scores: [],
-    showResponse: false
+    showResponse: false,
+    startCountDown: false
 });
 
 export default function makeStore() {

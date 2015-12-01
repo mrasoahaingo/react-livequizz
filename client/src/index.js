@@ -14,7 +14,7 @@ import { setState } from './actions'
 
 import { AppContainer } from './components/App'
 
-const socket = io('http://192.168.0.15:8090');
+const socket = io(`${location.protocol}//${location.hostname}:8090`);
 socket.on('state', state =>
   store.dispatch(setState(state))
 );

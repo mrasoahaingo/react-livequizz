@@ -5,11 +5,11 @@ export default class Player extends React.Component {
     handleBuzz (event) {
         event.preventDefault();
         this.props.buzz(this.props.player);
+
     }
     render () {
-
-        const isOut = this.props.out.indexOf(this.props.player) > -1
-        const isDisabled = this.props.quizz === null || this.props.showResponse || this.props.buzzer
+        const isOut = this.props.out.indexOf(this.props.player) > -1;
+        const isDisabled = this.props.quizz === null || this.props.showResponse || this.props.buzzer;
         let icon = <Icon name="gps_fixed"/>
         if (this.props.quizz === null)
             icon = <Icon name="gps_not_fixed"/>
