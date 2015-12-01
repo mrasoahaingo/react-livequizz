@@ -1,5 +1,23 @@
 import { List, Map, fromJS } from 'immutable'
 
+export function addConnection(state) {
+    return state.update('connections', 0, connections => connections + 1);
+}
+
+export function removeConnection(state, id) {
+    const playerIndex = state.get('players').findIndex(player => player.get('id') === id);
+    if(playerIndex === -1) {
+        return state.update('connections', 0, connections => connections - 1);
+    }
+    return state
+        .updateIn(
+            ['players', playerIndex, 'isConnected'],
+            true,
+            isConnected => false
+        )
+        .update('connections', 0, connections => connections - 1);
+}
+
 export function startTimer(state) {
     return state.set('startCountDown', true);
 }
@@ -24,7 +42,8 @@ export function addPlayer(state, playerId, id = -1) {
         .update('players', List(), players => players.push(Map({
             id: id,
             player: playerId,
-            score: 0
+            score: 0,
+            isConnected: true
         })));
 }
 

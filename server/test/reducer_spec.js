@@ -132,10 +132,10 @@ describe('reducer', () => {
         const nextState = actions.reduce(reducer, fromJS({}));
         expect(nextState.filter(keyIn('players', 'scores', 'winner', 'archive'))).to.equal(fromJS({
             players: [
-                { id: 1, player: 'Mic', score: 2 },
-                { id: 2, player: 'Fran', score: 0 },
-                { id: 3, player: 'Eva', score: 0 },
-                { id: 4, player: 'Lana', score: 0 }
+                { id: 1, player: 'Mic', score: 2, isConnected: true },
+                { id: 2, player: 'Fran', score: 0, isConnected: true },
+                { id: 3, player: 'Eva', score: 0, isConnected: true },
+                { id: 4, player: 'Lana', score: 0, isConnected: true }
             ],
             winner: 'Mic',
             archive: [
@@ -164,8 +164,8 @@ describe('reducer', () => {
         const nextState = actions.reduce(reducer, fromJS({}));
         expect(nextState.filter(keyIn('players', 'scores', 'entries', 'archive'))).to.equal(fromJS({
             players: [
-                { id: 1, player: 'Mic', score: 1 },
-                { id: 2, player: 'Fran', score: 1 }
+                { id: 1, player: 'Mic', score: 1, isConnected: true },
+                { id: 2, player: 'Fran', score: 1, isConnected: true }
             ],
             entries: [
                 { question: 'Bonus' }

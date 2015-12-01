@@ -11,5 +11,10 @@ export default function startServer(store) {
             action.id = socket.id;
             store.dispatch(action);
         });
+        store.dispatch({ type: 'ADD_CONNECTION' });
+        socket.on('disconnect', () => {
+            store.dispatch({ type: 'REMOVE_CONNECTION', id: socket.id });
+        });
     });
+
 }

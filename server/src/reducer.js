@@ -1,5 +1,5 @@
 import { Map } from 'immutable'
-import { startTimer, stopTimer, setEntries, addEntry, addPlayer, next, buzz, rightResponse, wrongResponse, toggleResponse } from './core'
+import { addConnection, removeConnection, startTimer, stopTimer, setEntries, addEntry, addPlayer, next, buzz, rightResponse, wrongResponse, toggleResponse } from './core'
 
 export default function reducer(state = Map(), action) {
     switch (action.type) {
@@ -26,6 +26,12 @@ export default function reducer(state = Map(), action) {
 
         case 'TOGGLE_RESPONSE':
         return stopTimer(toggleResponse(state));
+
+        case 'ADD_CONNECTION':
+        return addConnection(state);
+
+        case 'REMOVE_CONNECTION':
+        return removeConnection(state, action.id);
 
         default:
         return state;
