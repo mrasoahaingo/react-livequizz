@@ -10,14 +10,17 @@ import io from 'socket.io-client'
 
 import reducer from './reducer'
 import middleware from './middleware'
-import { setState } from './actions'
+import { setState, clearBuzzer } from './actions'
+
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
 
 import { AppContainer } from './components/App'
 
-const socket = io(`${location.protocol}//${location.hostname}:8090`);
-socket.on('state', state =>
-  store.dispatch(setState(state))
-);
+export const socket = io(`${location.protocol}//${location.hostname}:8090`);
+
+socket.on('state', state => store.dispatch(setState(state)));
+socket.on('getReady', () => store.dispatch(clearBuzzer(socket)));
 
 const createStoreWithMiddleware = compose(
     applyMiddleware(middleware(socket)),

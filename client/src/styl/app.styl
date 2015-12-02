@@ -32,8 +32,13 @@ h1, h2
     font-family 'Pacifico'
     font-size 60px
     line-height 75px
-button:disabled
-    opacity 0.4
+button
+    border none
+    background none
+    display inline-block
+    outline none
+    &:disabled
+        opacity 0.4
 
 icon($width, $height)
     size($width, $height)
@@ -98,39 +103,36 @@ icon($width, $height)
     text-align center
 
     &__Buzzer
-        border none
-        background none
-        display inline-block
-        outline none
         size(300px, 300px)
 
-    &:disabled
-        .Icon
-            opacity 0.3
+    &__Actions
+        text-align center
+    &__Icon
+        margin 0 10px
+        size(100px, 100px)
 
 .Admin
     text-align center
 
     &__Next, &__Action
-        border none
-        background none
-        display inline-block
-        outline none
         size(300px, 300px)
     &__Action
         size(100px, 100px)
 
 .Dashboard
-    size(95%, 95%)
+    size(100%, 100%)
 
     &__Quizz
         height 100%
-        lost-column 3/4
         text-align center
         lost-align center
     &__Scores
+        absolute top 10px bottom 10px left 10px
         height 100%
-        lost-column 1/4
+        width 15%
+
+    &__Icon
+        size(100px, 100px)
 
 .Quizz
     &__Question, &__Response
@@ -161,6 +163,11 @@ icon($width, $height)
             line-height 32px
             size(50px, 100%)
             text-align center
+
+.Score
+    &__Check
+        float right
+        size(20px, 20px)
 
 .Winner
     lost-align center

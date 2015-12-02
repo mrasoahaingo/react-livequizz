@@ -4,6 +4,10 @@ function setState(state, newState) {
     return state.merge(newState);
 }
 
+function clearBuzzer (state, socket) {
+    return state.set('buzzer', null);
+}
+
 function addPlayer(state, player) {
 
     return state
@@ -24,10 +28,17 @@ function welcomeGuest(state) {
         .set('isGuest', true);
 }
 
+function sendReady(state) {
+    return state.set('hasSendReady', true);
+}
+
 export default function reducer(state = Map(), action) {
     switch(action.type) {
         case 'SET_STATE':
         return setState(state, action.state);
+
+        case 'CLEAR_BUZZER':
+        return clearBuzzer(action.socket);
 
         case 'ADD_PLAYER':
         return addPlayer(state, action.player);
@@ -37,6 +48,9 @@ export default function reducer(state = Map(), action) {
 
         case 'WELCOME_GUEST':
         return welcomeGuest(state);
+
+        case 'SEND_READY':
+        return sendReady(state);
 
         default:
         return state;

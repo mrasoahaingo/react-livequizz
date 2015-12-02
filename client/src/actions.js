@@ -5,6 +5,21 @@ export function setState(state) {
     };
 }
 
+export function sendReady(playerId) {
+    return {
+        meta: { remote: true },
+        type: 'SEND_READY',
+        playerId
+    }
+}
+
+export function clearBuzzer(socket) {
+    return {
+        type: 'CLEAR_BUZZER',
+        socket
+    }
+}
+
 export function addPlayer(player) {
     return {
         meta: { remote: true },
@@ -67,5 +82,21 @@ export function resetTimer() {
     return {
         meta: { remote: true },
         type: 'RESET_TIMER'
+    }
+}
+
+export function ready(playerId) {
+    return {
+        meta: { remote: true },
+        type: 'IS_READY',
+        playerId
+    }
+}
+
+export function sayHello(playerId) {
+    return {
+        meta: { remote: true },
+        type: 'SAY_HELLO',
+        playerId
     }
 }

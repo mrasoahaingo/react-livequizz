@@ -2,17 +2,16 @@ import { fromJS } from 'immutable'
 import { expect } from 'chai'
 
 import { keyIn } from '../src/utils'
-import { setEntries, setPlayers, next, buzz, rightResponse, wrongResponse, removePlayer } from '../src/core'
+import * as Core from '../src/core'
 
 describe('application initialization', () => {
-
     it('set quizz entries', () => {
         const state = fromJS({});
         const entries = [
             { question: 'Where is Bryan', response: 'In the kitchen' },
             { question: 'What is Sandy lastname', response: 'Kilo' }
         ];
-        const nextState = setEntries(state, entries);
+        const nextState = Core.setEntries(state, entries);
         expect(nextState).to.equal(fromJS({
             entries: [
                 { question: 'Where is Bryan', response: 'In the kitchen' },
@@ -24,6 +23,37 @@ describe('application initialization', () => {
 
 describe('application logic', () => {
     describe('player', () => {
+        it('add new player', () => {
+            const state = fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 0, isConnected: true, isReady: false }
+                ]
+            });
+            const nextState = Core.addPlayer(state, 'Sandy', 2);
+            expect(nextState).to.equal(fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 0, isConnected: true, isReady: false },
+                    { id: 2, player: 'Sandy', score: 0, isConnected: true, isReady: false }
+                ]
+            }));
+        });
+
+        it('add existing player', () => {
+            const state = fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 0, isConnected: true },
+                    { id: 2, player: 'Sandy', score: 0, isConnected: false }
+                ]
+            });
+            const nextState = Core.addPlayer(state, 'Sandy', 2);
+            expect(nextState).to.equal(fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 0, isConnected: true },
+                    { id: 2, player: 'Sandy', score: 0, isConnected: true }
+                ]
+            }));
+        });
+
         it('remove player', () => {
             const state = fromJS({
                 players: [
@@ -31,10 +61,26 @@ describe('application logic', () => {
                     { id: 2, player: 'Sandy', score: 0 }
                 ]
             });
-            const nextState = removePlayer(state, 'Bryan');
+            const nextState = Core.removePlayer(state, 'Bryan');
             expect(nextState).to.equal(fromJS({
                 players: [
                     { id: 2, player: 'Sandy', score: 0 }
+                ]
+            }));
+        });
+
+        it('disconnectPlayer', () => {
+            const state = fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 0, isConnected: true },
+                    { id: 2, player: 'Sandy', score: 0, isConnected: true }
+                ]
+            });
+            const nextState = Core.disconnectPlayer(state, 1);
+            expect(nextState).to.equal(fromJS({
+                players: [
+                    { id: 1, player: 'Bryan', score: 0, isConnected: false },
+                    { id: 2, player: 'Sandy', score: 0, isConnected: true }
                 ]
             }));
         });
@@ -49,7 +95,7 @@ describe('application logic', () => {
                     { question: 'What is Sandy lastname', response: 'Kilo' }
                 ]
             });
-            const nextState = next(state);
+            const nextState = Core.next(state);
             expect(nextState.filter(keyIn('quizz', 'entries'))).to.equal(fromJS({
                 quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
                 entries : [
@@ -66,7 +112,7 @@ describe('application logic', () => {
                 ],
                 entries: []
             });
-            const nextState = next(state);
+            const nextState = Core.next(state);
             expect(nextState.filter(keyIn('players', 'winner'))).to.equal(fromJS({
                 players: [
                     { id: 1, player: 'Bryan', score: 3 },
@@ -84,7 +130,7 @@ describe('application logic', () => {
                 ],
                 entries: []
             });
-            const nextState = next(state);
+            const nextState = Core.next(state);
             expect(nextState).to.equal(fromJS({
                 players: [
                     { id: 1, player: 'Bryan', score: 3 },
@@ -105,7 +151,7 @@ describe('application logic', () => {
                     { question: 'What is Sandy lastname', response: 'Kilo' }
                 ]
             });
-            const nextState = buzz(state, 'Bryan');
+            const nextState = Core.buzz(state, 'Bryan');
             expect(nextState.filter(keyIn('buzzer', 'quizz', 'entries'))).to.equal(fromJS({
                 buzzer: 'Bryan',
                 quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
@@ -122,7 +168,7 @@ describe('application logic', () => {
                     { question: 'What is Sandy lastname', response: 'Kilo' }
                 ]
             });
-            const nextState = buzz(state, 'Sandy');
+            const nextState = Core.buzz(state, 'Sandy');
             expect(nextState).to.equal(state);
         });
     });
@@ -136,7 +182,7 @@ describe('application logic', () => {
                 ],
                 quizz: { question: 'Where is Bryan', response: 'In the kitchen' }
             });
-            const nextState = rightResponse(state);
+            const nextState = Core.rightResponse(state);
             expect(nextState.filter(keyIn('players', 'archive'))).to.equal(fromJS({
                 players: [
                     { id: 1, player: 'Bryan', score: 1 }
@@ -152,7 +198,7 @@ describe('application logic', () => {
                 buzzer: 'Bryan',
                 quizz: { question: 'Where is Bryan', response: 'In the kitchen' }
             });
-            const nextState = wrongResponse(state);
+            const nextState = Core.wrongResponse(state);
             expect(nextState.filter(keyIn('out', 'quizz'))).to.equal(fromJS({
                 out: ['Bryan'],
                 quizz: { question: 'Where is Bryan', response: 'In the kitchen' }

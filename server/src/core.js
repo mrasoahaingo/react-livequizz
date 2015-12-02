@@ -1,23 +1,5 @@
 import { List, Map, fromJS } from 'immutable'
 
-export function addConnection(state) {
-    return state.update('connections', 0, connections => connections + 1);
-}
-
-export function removeConnection(state, id) {
-    const playerIndex = state.get('players').findIndex(player => player.get('id') === id);
-    if(playerIndex === -1) {
-        return state.update('connections', 0, connections => connections - 1);
-    }
-    return state
-        .updateIn(
-            ['players', playerIndex, 'isConnected'],
-            true,
-            isConnected => false
-        )
-        .update('connections', 0, connections => connections - 1);
-}
-
 export function startTimer(state) {
     return state.set('startCountDown', true);
 }
@@ -35,34 +17,75 @@ export function addEntry(state, entry) {
 }
 
 export function addPlayer(state, playerId, id = -1) {
-    if(state.get('players', List()).find(player => player.get('player') === playerId)) {
-        return state;
+    const playerIndex = state
+    .get('players', List())
+    .findIndex(player => player.get('player') === playerId);
+
+    if(playerIndex > -1) {
+        return state
+        .updateIn(
+            ['players', playerIndex, 'isConnected'],
+            false,
+            isConnected => true
+        );
     }
+
     return state
-        .update('players', List(), players => players.push(Map({
-            id: id,
-            player: playerId,
-            score: 0,
-            isConnected: true
-        })));
+    .update('players', List(), players => players.push(Map({
+        id: id,
+        player: playerId,
+        score: 0,
+        isConnected: true,
+        isReady: false
+    })));
+}
+
+export function isReady(state, playerId) {
+    const playerIndex = state
+    .get('players', List())
+    .findIndex(player => player.get('player') === playerId);
+
+    return state.updateIn(
+        ['players', playerIndex, 'isReady'],
+        false,
+        isReady => true
+    );
+}
+
+export function disconnectPlayer(state, playerId) {
+    const playerIndex = state
+    .get('players', List())
+    .findIndex(player => player.get('id') === playerId);
+
+    return state.updateIn(
+        ['players', playerIndex, 'isConnected'],
+        false,
+        isConnected => false
+    );
 }
 
 export function removePlayer(state, playerId) {
-    const playerIndex = state.get('players', List()).findIndex(player => player.get('player') === playerId);
+    const playerIndex = state
+    .get('players', List())
+    .findIndex(player => player.get('player') === playerId);
+
     return state
-        .update('players', List(), players => players.remove(playerIndex));
+    .update('players', List(), players => players.remove(playerIndex));
 }
 
 function getWinnerOrTie(state) {
-    const [first, second] = state.get('players').sort((a, b) => (a.get('score') < b.get('score'))).take(2);
+    const [first, second] = state
+    .get('players')
+    .sort((a, b) => (a.get('score') < b.get('score')))
+    .take(2);
 
     if(first.get('score') === second.get('score')) {
         return addEntry(state, { question: 'Bonus' });
     }
 
     return state
-        .set('entries', List())
-        .set('winner', first.get('player'));
+    .set('entries', List())
+    .set('winner', first.get('player'));
 }
 
 export function next(state) {
@@ -72,16 +95,18 @@ export function next(state) {
         return getWinnerOrTie(state);
     }
 
+    const players = state.get('players', List()).map(player => player.update('isReady', false, isReady => false));
     const entries = state.get('entries').skip(1);
 
     return state
-        .set('buzzer', null)
-        .set('out', List())
-        .set('showResponse', false)
-        .merge({
-            quizz,
-            entries
-        });
+    .set('buzzer', null)
+    .set('out', List())
+    .set('showResponse', false)
+    .merge({
+        players,
+        quizz,
+        entries
+    });
 }
 
 export function buzz(state, playerId) {
@@ -97,15 +122,18 @@ export function rightResponse(state) {
         return state;
     }
     const quizzToBeArchived = state.get('quizz').set('buzzer', playerId);
-    const playerIndex = state.get('players', List()).findIndex(player => (player.get('player') === playerId))
+    const playerIndex = state
+    .get('players', List())
+    .findIndex(player => (player.get('player') === playerId));
+
     return state
-        .set('buzzer', null)
-        .updateIn(
-            ['players', playerIndex, 'score'],
-            0,
-            score => score + 1
-        )
-        .update('archive', List(), archive => archive.push(quizzToBeArchived));
+    .set('buzzer', null)
+    .updateIn(
+        ['players', playerIndex, 'score'],
+        0,
+        score => score + 1
+    )
+    .update('archive', List(), archive => archive.push(quizzToBeArchived));
 }
 
 export function wrongResponse(state) {
@@ -114,10 +142,14 @@ export function wrongResponse(state) {
         return state;
     }
     return state
-        .set('buzzer', null)
-        .update('out', List(), out => out.push(playerId));
+    .set('buzzer', null)
+    .update('out', List(), out => out.push(playerId));
 }
 
 export function toggleResponse (state) {
     return state.update('showResponse', false, value => !value);
+}
+
+export function toggleQuestion (state) {
+    return state.update('showQuestion', false, value => !value);
 }

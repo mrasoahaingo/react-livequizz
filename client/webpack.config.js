@@ -26,7 +26,7 @@ module.exports = {
             include: path.join(__dirname, 'src')
         },{
             test: /\.styl$/,
-            loaders: ['style', 'css', 'stylus'],
+            loaders: ['style', 'css', 'autoprefixer', 'stylus'],
             include: path.join(__dirname, 'src')
         },{
             test: /\.svg/,
