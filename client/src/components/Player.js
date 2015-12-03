@@ -5,24 +5,24 @@ import { fromJS } from 'immutable'
 export default class Player extends React.Component {
     componentWillReceiveProps() {
         if(this.props.getReady && !this.props.hasSendReady) {
-            this.props.sendReady(this.props.player);
+            this.props.sendReady(this.props.playerName);
         }
     }
     handleBuzz (event) {
         event.preventDefault();
-        this.props.buzz(this.props.player);
+        this.props.buzz(this.props.playerName);
     }
     handleReady() {
-        this.props.ready(this.props.player);
+        this.props.ready(this.props.playerName);
     }
     handleHello() {
-        this.props.sayHello(this.props.player);
+        this.props.sayHello(this.props.playerName);
     }
     render () {
-        const player = fromJS(this.props.players).find(player => player.get('player') === this.props.player);
-        const isReady = player && player.get('isReady');
-        const isOut = this.props.out.indexOf(this.props.player) > -1;
-        const isDisabled = !isReady || this.props.quizz === null || this.props.showResponse || this.props.buzzer;
+        const player = fromJS(this.props.players).find(player => player.get('name') === this.props.playerName);
+        const isReady = player.get('isReady');
+        const isOut = player.get('isOut');
+        const isDisabled = isOut || !isReady || !this.props.quizz || this.props.showResponse || this.props.buzzer;
 
         let icon = <Icon name="gps_fixed"/>
         if (!this.props.quizz)
@@ -32,7 +32,7 @@ export default class Player extends React.Component {
 
         return (
             <div className="Player">
-                <h1>Hello {this.props.player}</h1>
+                <h1>Hello {this.props.playerName}</h1>
                 <button className="Player__Buzzer"
                     disabled={isDisabled}
                     onTouchTap={this.handleBuzz.bind(this)}
@@ -41,6 +41,7 @@ export default class Player extends React.Component {
                 </button>
                 <div className="Player__Actions">
                     <button className="Player__Icon"
+                        disabled={isReady}
                         onTouchTap={this.handleReady.bind(this)}
                         onClick={this.handleReady.bind(this)}>
                         <Icon name="thumb_up"/>

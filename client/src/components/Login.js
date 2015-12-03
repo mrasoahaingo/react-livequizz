@@ -4,8 +4,8 @@ import Icon from './Icon'
 export default class Login extends React.Component {
     setPlayerName (event) {
         event.preventDefault();
-        const playerId = this.refs.playerId.value.toLowerCase();
-        switch(playerId) {
+        const playerName = this.refs.playerName.value.toLowerCase();
+        switch(playerName) {
             case 'francia':
             this.props.welcomeAdmin();
             break;
@@ -16,7 +16,7 @@ export default class Login extends React.Component {
             break;
 
             default:
-            this.props.addPlayer(this.refs.playerId.value);
+            this.props.addPlayer(playerName);
             break;
         }
     }
@@ -24,7 +24,7 @@ export default class Login extends React.Component {
         return (
             <form className="Login" onSubmit={this.setPlayerName.bind(this)}>
                 <label className="Login__Icon" htmlFor="login"><Icon name="person"/></label>
-                <input id="login" className="Login__Input" ref="playerId" type="text" placeholder="Pseudo" autoFocus={true}/>
+                <input id="login" className="Login__Input" ref="playerName" type="text" placeholder="Your name" autoFocus={true}/>
             </form>
         )
     }

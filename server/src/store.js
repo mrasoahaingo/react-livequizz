@@ -9,7 +9,6 @@ export const initialState = fromJS({
     entries: [],
     players: [],
     archive: [],
-    out: [],
     scores: [],
     showResponse: false,
     startCountDown: false

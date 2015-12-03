@@ -19,7 +19,7 @@ export class App extends React.Component {
         if (this.props.isGuest) {
             return <DashBoard {...this.props}/>
         }
-        if (this.props.player) {
+        if (this.props.playerName) {
             return <Player {...this.props}/>
         }
         return <Login {...this.props}/>;

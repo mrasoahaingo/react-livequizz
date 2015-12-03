@@ -1,4 +1,5 @@
 import { List, Map, fromJS } from 'immutable'
+import { findPlayerIndexBy, findPlayerBy } from './utils'
 
 export function startTimer(state) {
     return state.set('startCountDown', true);
@@ -16,10 +17,8 @@ export function addEntry(state, entry) {
     return state.update('entries', entries => entries.push(fromJS(entry)));
 }
 
-export function addPlayer(state, playerId, id = -1) {
-    const playerIndex = state
-    .get('players', List())
-    .findIndex(player => player.get('player') === playerId);
+export function addPlayer(state, playerName, id = -1) {
+    const playerIndex = findPlayerIndexBy(state, 'name', playerName);
 
     if(playerIndex > -1) {
         return state
@@ -30,20 +29,18 @@ export function addPlayer(state, playerId, id = -1) {
         );
     }
 
-    return state
-    .update('players', List(), players => players.push(Map({
+    return state.update('players', List(), players => players.push(Map({
         id: id,
-        player: playerId,
+        name: playerName,
         score: 0,
         isConnected: true,
-        isReady: false
+        isReady: false,
+        isOut: state.get('quizz') !== null
     })));
 }
 
-export function isReady(state, playerId) {
-    const playerIndex = state
-    .get('players', List())
-    .findIndex(player => player.get('player') === playerId);
+export function isReady(state, playerName) {
+    const playerIndex = findPlayerIndexBy(state, 'name', playerName);
 
     return state.updateIn(
         ['players', playerIndex, 'isReady'],
@@ -53,9 +50,7 @@ export function isReady(state, playerId) {
 }
 
 export function disconnectPlayer(state, playerId) {
-    const playerIndex = state
-    .get('players', List())
-    .findIndex(player => player.get('id') === playerId);
+    const playerIndex = findPlayerIndexBy(state, 'id', playerId);
 
     return state.updateIn(
         ['players', playerIndex, 'isConnected'],
@@ -64,13 +59,9 @@ export function disconnectPlayer(state, playerId) {
     );
 }
 
-export function removePlayer(state, playerId) {
-    const playerIndex = state
-    .get('players', List())
-    .findIndex(player => player.get('player') === playerId);
-
-    return state
-    .update('players', List(), players => players.remove(playerIndex));
+export function removePlayer(state, playerName) {
+    const playerIndex = findPlayerIndexBy(state, 'name', playerName);
+    return state.update('players', List(), players => players.remove(playerIndex));
 }
 
 function getWinnerOrTie(state) {
@@ -85,7 +76,7 @@ function getWinnerOrTie(state) {
 
     return state
     .set('entries', List())
-    .set('winner', first.get('player'));
+    .set('winner', first.get('name'));
 }
 
 export function next(state) {
@@ -95,12 +86,14 @@ export function next(state) {
         return getWinnerOrTie(state);
     }
 
-    const players = state.get('players', List()).map(player => player.update('isReady', false, isReady => false));
+    const players = state.get('players', List()).map(player => player
+        .update('isReady', false, isReady => false)
+        .update('isOut', false, isOut => false)
+    );
     const entries = state.get('entries').skip(1);
 
     return state
     .set('buzzer', null)
-    .set('out', List())
     .set('showResponse', false)
     .merge({
         players,
@@ -109,22 +102,25 @@ export function next(state) {
     });
 }
 
-export function buzz(state, playerId) {
-    if (state.get('buzzer') || state.get('out', List()).includes(playerId)) {
+export function buzz(state, playerName) {
+    const player = findPlayerBy(state, 'name', playerName);
+
+    if (state.get('buzzer') || player.get('isOut')) {
         return state;
     }
-    return state.set('buzzer', playerId);
+
+    return state.set('buzzer', playerName);
 }
 
 export function rightResponse(state) {
-    const playerId = state.get('buzzer');
-    if (!playerId) {
+    const playerName = state.get('buzzer');
+
+    if (!playerName) {
         return state;
     }
-    const quizzToBeArchived = state.get('quizz').set('buzzer', playerId);
-    const playerIndex = state
-    .get('players', List())
-    .findIndex(player => (player.get('player') === playerId));
+
+    const quizzToBeArchived = state.get('quizz').set('buzzer', playerName);
+    const playerIndex = findPlayerIndexBy(state, 'name', playerName);
 
     return state
     .set('buzzer', null)
@@ -137,13 +133,20 @@ export function rightResponse(state) {
 }
 
 export function wrongResponse(state) {
-    const playerId = state.get('buzzer');
-    if (!playerId) {
+    const playerName = state.get('buzzer');
+    const playerIndex = findPlayerIndexBy(state, 'name', playerName);
+
+    if (playerIndex === -1) {
         return state;
     }
+
     return state
     .set('buzzer', null)
-    .update('out', List(), out => out.push(playerId));
+    .updateIn(
+        ['players', playerIndex, 'isOut'],
+        false,
+        isOut => true
+    );
 }
 
 export function toggleResponse (state) {

@@ -20,11 +20,11 @@ export function clearBuzzer(socket) {
     }
 }
 
-export function addPlayer(player) {
+export function addPlayer(playerName) {
     return {
         meta: { remote: true },
         type: 'ADD_PLAYER',
-        player
+        name: playerName
     };
 }
 

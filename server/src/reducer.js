@@ -10,7 +10,7 @@ export default function reducer(state = Map(), action) {
         return Core.addEntry(state, action.entry);
 
         case 'ADD_PLAYER':
-        return Core.addPlayer(state, action.player, action.id);
+        return Core.addPlayer(state, action.name, action.id);
 
         case 'NEXT':
         return Core.stopTimer(Core.next(state));

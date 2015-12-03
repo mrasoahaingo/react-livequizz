@@ -8,12 +8,12 @@ function clearBuzzer (state, socket) {
     return state.set('buzzer', null);
 }
 
-function addPlayer(state, player) {
+function addPlayer(state, playerName) {
 
     return state
         .remove('isAdmin')
         .remove('isGuest')
-        .set('player', player);
+        .set('playerName', playerName);
 }
 
 function welcomeAdmin(state) {
@@ -41,7 +41,7 @@ export default function reducer(state = Map(), action) {
         return clearBuzzer(action.socket);
 
         case 'ADD_PLAYER':
-        return addPlayer(state, action.player);
+        return addPlayer(state, action.name);
 
         case 'WELCOME_ADMIN':
         return welcomeAdmin(state);
