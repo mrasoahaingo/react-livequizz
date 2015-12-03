@@ -20,7 +20,6 @@ import { AppContainer } from './components/App'
 export const socket = io(`${location.protocol}//${location.hostname}:8090`);
 
 socket.on('state', state => store.dispatch(setState(state)));
-socket.on('getReady', () => store.dispatch(clearBuzzer(socket)));
 
 const createStoreWithMiddleware = compose(
     applyMiddleware(middleware(socket)),

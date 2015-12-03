@@ -46,11 +46,6 @@ export default class Player extends React.Component {
                         onClick={this.handleReady.bind(this)}>
                         <Icon name="thumb_up"/>
                     </button>
-                    <button className="Player__Icon"
-                        onTouchTap={this.handleHello.bind(this)}
-                        onClick={this.handleHello.bind(this)}>
-                        <Icon name="tag_faces"/>
-                    </button>
                 </div>
             </div>
         )
