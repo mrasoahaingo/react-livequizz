@@ -16,6 +16,9 @@ export default function reducer(state = Map(), action) {
         return Core.stopTimer(Core.next(state));
 
         case 'BUZZ':
+        if (state.get('players').count(player => player.get('isReady')) !== state.get('players').size) {
+            return state;
+        }
         return Core.startTimer(Core.buzz(state, action.playerId));
 
         case 'RIGHT_RESPONSE':

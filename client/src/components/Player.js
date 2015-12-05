@@ -10,19 +10,23 @@ export default class Player extends React.Component {
     }
     handleBuzz (event) {
         event.preventDefault();
+        if (event.currentTarget.hasAttribute('disabled')) {
+            return false;
+        }
         this.props.buzz(this.props.playerName);
     }
-    handleReady() {
+    handleReady (event) {
+        event.preventDefault();
+        if (event.currentTarget.hasAttribute('disabled')) {
+            return false;
+        }
         this.props.ready(this.props.playerName);
-    }
-    handleHello() {
-        this.props.sayHello(this.props.playerName);
     }
     render () {
         const player = fromJS(this.props.players).find(player => player.get('name') === this.props.playerName);
         const isReady = player.get('isReady');
         const isOut = player.get('isOut');
-        const isDisabled = isOut || !isReady || !this.props.quizz || this.props.showResponse || this.props.buzzer;
+        const isDisabled = isOut || !isReady || !this.props.quizz || this.props.showResponse || (this.props.buzzer && this.props.buzzer !== this.props.playerName);
 
         let icon = <Icon name="gps_fixed"/>
         if (!this.props.quizz)
