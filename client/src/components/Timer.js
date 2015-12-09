@@ -9,10 +9,14 @@ export default class Timer extends React.Component {
         };
     }
     componentWillReceiveProps() {
-        this.startTimer();
+        if (this.props.startCountDown) {
+            this.startTimer();
+        } else {
+            this.stopTimer();
+        }
     }
     componentWillUnMount() {
-        clearTimeout(this.timeout);
+        this.stopTimer();
     }
     startTimer() {
         this.setState({
@@ -20,8 +24,11 @@ export default class Timer extends React.Component {
         });
         this.tick();
     }
-    tick () {
+    stopTimer () {
         this.timeout && clearTimeout(this.timeout);
+    }
+    tick () {
+        this.stopTimer();
         this.timeout = setTimeout(() => {
             this.setState({
                 count: this.state.count - 1
