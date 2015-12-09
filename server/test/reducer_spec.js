@@ -40,7 +40,7 @@ describe('reducer', () => {
     it('handle buzzer', () => {
         const initialState = fromJS({
             players: [
-                { id: 1, name: 'Bryan' }
+                { id: 1, name: 'Bryan', isReady: true }
             ],
             quizz: { question: 'Where is Bryan', response: 'In the kitchen' },
             entries: [
@@ -114,12 +114,17 @@ describe('reducer', () => {
                 { question: 'Where is Bryan', response: 'In the kitchen' },
                 { question: 'What is Sandy lastname', response: 'Kilo' }
             ] },
-            { type: 'ADD_PLAYER', name: 'Mic', id: 1 },
-            { type: 'ADD_PLAYER', name: 'Fran', id: 2 },
-            { type: 'ADD_PLAYER', name: 'Eva', id: 3 },
-            { type: 'ADD_PLAYER', name: 'Lana', id: 4 },
+            { type: 'ADD_PLAYER', name: 'Mic', id: 1, isReady: true, isReady: true, isReady: true },
+            { type: 'ADD_PLAYER', name: 'Fran', id: 2, isReady: true, isReady: true, isReady: true },
+            { type: 'ADD_PLAYER', name: 'Eva', id: 3, isReady: true, isReady: true, isReady: true },
+            { type: 'ADD_PLAYER', name: 'Lana', id: 4, isReady: true, isReady: true, isReady: true },
 
             { type: 'NEXT' },
+
+            { type: 'IS_READY', playerId: 'Mic' },
+            { type: 'IS_READY', playerId: 'Fran' },
+            { type: 'IS_READY', playerId: 'Eva' },
+            { type: 'IS_READY', playerId: 'Lana' },
 
             { type: 'BUZZ', playerId: 'Eva' },
             { type: 'BUZZ', playerId: 'Lana' },
@@ -133,6 +138,11 @@ describe('reducer', () => {
             { type: 'RIGHT_RESPONSE' },
             { type: 'NEXT' },
 
+            { type: 'IS_READY', playerId: 'Mic' },
+            { type: 'IS_READY', playerId: 'Fran' },
+            { type: 'IS_READY', playerId: 'Eva' },
+            { type: 'IS_READY', playerId: 'Lana' },
+
             { type: 'BUZZ', playerId: 'Mic' },
             { type: 'RIGHT_RESPONSE' },
             { type: 'NEXT' }
@@ -140,10 +150,10 @@ describe('reducer', () => {
         const nextState = actions.reduce(reducer, fromJS({}));
         expect(nextState.filter(keyIn('players', 'scores', 'winner', 'archive'))).to.equal(fromJS({
             players: [
-                { id: 1, name: 'Mic', score: 2, isConnected: true, isReady: false, isOut: false },
-                { id: 2, name: 'Fran', score: 0, isConnected: true, isReady: false, isOut: false },
-                { id: 3, name: 'Eva', score: 0, isConnected: true, isReady: false, isOut: false },
-                { id: 4, name: 'Lana', score: 0, isConnected: true, isReady: false, isOut: false }
+                { id: 1, name: 'Mic', score: 2, isConnected: true, isReady: true, isOut: false },
+                { id: 2, name: 'Fran', score: 0, isConnected: true, isReady: true, isOut: false },
+                { id: 3, name: 'Eva', score: 0, isConnected: true, isReady: true, isOut: false },
+                { id: 4, name: 'Lana', score: 0, isConnected: true, isReady: true, isOut: false }
             ],
             winner: 'Mic',
             archive: [
@@ -159,12 +169,20 @@ describe('reducer', () => {
                 { question: 'Where is Bryan', response: 'In the kitchen' },
                 { question: 'What is Sandy lastname', response: 'Kilo' }
             ] },
-            { type: 'ADD_PLAYER', name: 'Mic', id: 1 },
-            { type: 'ADD_PLAYER', name: 'Fran', id: 2 },
+            { type: 'ADD_PLAYER', name: 'Mic', id: 1, isReady: true, isReady: true },
+            { type: 'ADD_PLAYER', name: 'Fran', id: 2, isReady: true, isReady: true },
             { type: 'NEXT' },
+
+            { type: 'IS_READY', playerId: 'Mic' },
+            { type: 'IS_READY', playerId: 'Fran' },
+
             { type: 'BUZZ', playerId: 'Mic' },
             { type: 'RIGHT_RESPONSE' },
             { type: 'NEXT' },
+
+            { type: 'IS_READY', playerId: 'Mic' },
+            { type: 'IS_READY', playerId: 'Fran' },
+
             { type: 'BUZZ', playerId: 'Fran' },
             { type: 'RIGHT_RESPONSE' },
             { type: 'NEXT' }
@@ -172,8 +190,8 @@ describe('reducer', () => {
         const nextState = actions.reduce(reducer, fromJS({}));
         expect(nextState.filter(keyIn('players', 'scores', 'entries', 'archive'))).to.equal(fromJS({
             players: [
-                { id: 1, name: 'Mic', score: 1, isConnected: true, isReady: false, isOut: false },
-                { id: 2, name: 'Fran', score: 1, isConnected: true, isReady: false, isOut: false }
+                { id: 1, name: 'Mic', score: 1, isConnected: true, isReady: true, isOut: false },
+                { id: 2, name: 'Fran', score: 1, isConnected: true, isReady: true, isOut: false }
             ],
             entries: [
                 { question: 'Bonus' }
@@ -188,8 +206,8 @@ describe('reducer', () => {
     it('handle sequencial actions with tie break time', () => {
         const tieBreakState = fromJS({
             players: [
-                { id: 1, name: 'Mic', score: 1 },
-                { id: 2, name: 'Fran', score: 1 }
+                { id: 1, name: 'Mic', score: 1, isReady: true },
+                { id: 2, name: 'Fran', score: 1, isReady: true }
             ],
             entries: [
                 { question: 'Bonus' }
@@ -201,6 +219,10 @@ describe('reducer', () => {
         })
         const actions = [
             { type: 'NEXT' },
+
+            { type: 'IS_READY', playerId: 'Mic' },
+            { type: 'IS_READY', playerId: 'Fran' },
+
             { type: 'BUZZ', playerId: 'Fran'},
             { type: 'RIGHT_RESPONSE'},
             { type: 'NEXT'}
@@ -208,8 +230,8 @@ describe('reducer', () => {
         const nextState = actions.reduce(reducer, tieBreakState);
         expect(nextState.filter(keyIn('players', 'scores', 'winner', 'archive'))).to.equal(fromJS({
             players: [
-                { id: 1, name: 'Mic', score: 1 },
-                { id: 2, name: 'Fran', score: 2 }
+                { id: 1, name: 'Mic', score: 1, isReady: true },
+                { id: 2, name: 'Fran', score: 2, isReady: true }
             ],
             winner: 'Fran',
             archive: [
