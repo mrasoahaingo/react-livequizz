@@ -24,7 +24,7 @@ export default class Login extends React.Component {
         return (
             <form className="Login" onSubmit={this.setPlayerName.bind(this)}>
                 <label className="Login__Icon" htmlFor="login"><Icon name="person"/></label>
-                <input id="login" className="Login__Input" ref="playerName" type="text" placeholder="Your name" autoFocus={true}/>
+                <input id="login" autoComplete="off" className="Login__Input" ref="playerName" type="text" placeholder="Your name" autoFocus={true}/>
             </form>
         )
     }

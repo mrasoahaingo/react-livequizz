@@ -9,7 +9,7 @@ export default class Admin extends React.Component {
             <div className="Admin">
 
                 <div>
-                    {this.props.quizz.response}
+                    {this.props.quizz && this.props.quizz.response}
                 </div>
 
                 <div >
